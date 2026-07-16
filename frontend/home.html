@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>New Scan — NeuroScan AI</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav>
+    <div class="nav-brand">NeuroScan AI</div>
+    <div class="nav-links">
+      <a href="home.html" class="active">New Scan</a>
+      <a href="dashboard.html" id="dashboardLink">Dashboard</a>
+      <span class="nav-user" id="navUser"></span>
+      <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+  </nav>
+
+  <div class="container">
+    <header>
+      <h1>Alzheimer's Risk Screening</h1>
+      <p>Upload an MRI brain scan for instant AI-assisted analysis.</p>
+    </header>
+
+    <div class="card" id="patientSelectCard" style="display:none">
+      <h3>Select Patient</h3>
+      <div class="form-group">
+        <label>Patient</label>
+        <select id="patientSelect">
+          <option value="">Loading patients...</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Select Scan Type</h3>
+      <div class="role-select">
+        <div class="role-option selected" id="mode2D" onclick="selectMode('2D')">
+          <span class="role-title">🖼️ 2D Slice</span>
+          <span class="role-desc">JPG / PNG — EfficientNet-B3</span>
+        </div>
+        <div class="role-option" id="mode3D" onclick="selectMode('3D')">
+          <span class="role-title">🧠 3D Volume</span>
+          <span class="role-desc">.nii / .nii.gz — ResNet3D-18</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Upload MRI Scan</h3>
+      <div class="upload-box" id="uploadBox">
+        <input type="file" id="fileInput" accept="image/*" hidden>
+        <div class="upload-content" onclick="document.getElementById('fileInput').click()">
+          <div class="upload-icon" id="uploadIcon">🗂️</div>
+          <p id="uploadLabel">Click to upload MRI slice</p>
+          <span id="uploadHint">PNG, JPG supported</span>
+        </div>
+      </div>
+      <img id="preview" src="" alt="Preview" style="display:none">
+      <div id="niiPreview" style="display:none;align-items:center;gap:12px;padding:16px;background:#f8f9ff;border-radius:8px;border:1px solid #e2e8f0">
+        <span style="font-size:2rem">🧠</span>
+        <span id="niiFilename" style="font-weight:600;color:#1e293b"></span>
+        <span style="color:#6366f1;font-size:0.85rem">Ready for 3D analysis</span>
+      </div>
+      <button id="analyzeBtn" onclick="analyze()" style="display:none">Run Analysis</button>
+    </div>
+
+    <div id="loading" style="display:none" class="card loading-card">
+      <div class="spinner"></div>
+      <p id="loadingText">Analyzing scan...</p>
+    </div>
+
+    <div id="results" style="display:none">
+
+      <div class="card" id="modelBadgeCard" style="display:none;padding:12px 20px">
+        <span id="modelBadge" style="font-size:0.95rem;font-weight:600"></span>
+      </div>
+
+      <div class="card risk-card" id="riskCard">
+        <div class="risk-header">
+          <div>
+            <div class="risk-label">Risk Assessment</div>
+            <div class="risk-level" id="riskLevel"></div>
+            <div class="risk-sublabel" id="riskSublabel"></div>
+          </div>
+          <div class="risk-badge" id="riskBadge"></div>
+        </div>
+        <div id="uncertaintyWarning" style="display:none" class="warning">
+          ⚠️ Low confidence — this result should be reviewed by a specialist
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Clinical Recommendation</h3>
+        <div id="recommendation" class="recommendation"></div>
+      </div>
+
+      <div class="card">
+        <h3>Probability Breakdown</h3>
+        <div id="probBars"></div>
+      </div>
+
+      <div class="card" id="gradcamCard" style="display:none">
+        <h3>Brain Scan Analysis</h3>
+        <p class="sub">Highlighted areas show regions the AI focused on during analysis</p>
+        <div class="scan-row">
+          <div class="scan-item">
+            <p>Original Scan</p>
+            <img id="originalImage" src="" alt="Original">
+          </div>
+          <div class="scan-item">
+            <p>AI Focus Map</p>
+            <img id="gradcamImage" src="" alt="Grad-CAM">
+          </div>
+        </div>
+      </div>
+
+      <div class="card" id="slices3dCard" style="display:none">
+        <h3>3D Volume Analysis</h3>
+        <p class="sub">Middle slice from each anatomical plane with AI activation overlay</p>
+        <div class="scan-row" style="flex-wrap:wrap;gap:16px">
+          <div class="scan-item" style="flex:1;min-width:200px">
+            <p>Axial View</p>
+            <img id="axialSlice" src="" alt="Axial" style="width:100%;border-radius:8px">
+          </div>
+          <div class="scan-item" style="flex:1;min-width:200px">
+            <p>Sagittal View</p>
+            <img id="sagittalSlice" src="" alt="Sagittal" style="width:100%;border-radius:8px">
+          </div>
+          <div class="scan-item" style="flex:1;min-width:200px">
+            <p>Coronal View</p>
+            <img id="coronalSlice" src="" alt="Coronal" style="width:100%;border-radius:8px">
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Previous Scans</h3>
+        <div id="previousScans"><p class="muted">No previous scans found.</p></div>
+      </div>
+    </div>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
